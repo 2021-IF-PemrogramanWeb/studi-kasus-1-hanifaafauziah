@@ -1,3 +1,12 @@
+<?php
+  session_start();
+  require 'db_connect.php';
+  if(!isset($_SESSION["login"])){
+    header("location: login.php");
+    exit;
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,10 +32,10 @@
           <a href="#" class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="../../index3.html" class="nav-link">Home</a>
+          <a href="tabel.php" class="nav-link">Home</a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="#" class="nav-link">Contact</a>
+          <a href="logout.php" class="nav-link">Logout</a>
         </li>
       </ul>
     </nav>
@@ -39,6 +48,9 @@
       <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image mt-1">
+            <img src="assets/eagle.jpg" class="img-circle elevation-2" alt="Image">
+          </div>
           <div class="info">
             <!-- <i class="fas fa-tachometer-alt"></i> -->
             <a href="#" class="d-block">Welcome to Dashboard!</a>
@@ -51,30 +63,30 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
               <!-- Add icons to the links using the .nav-icon class
                   with font-awesome or any other icon font library -->
-              <li class="nav-item">
-                <a href="../Dashboard/tabel.html" class="nav-link">
-                  <i class="nav-icon fas fa-columns"></i>
-                  <p>
-                    Tabel
-                  </p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../Dashboard/grafik.html" class="nav-link m-0">
-                  <i class="nav-icon fas fa-chart-bar"></i>
-                  <p>
-                    Grafik
-                  </p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../Dashboard/sqldata.php" class="nav-link m-0">
-                  <i class="nav-icon fas fa-database"></i>
-                  <p>
-                    SQL Data
-                  </p>
-                </a>
-              </li>
+                  <li class="nav-item">
+                    <a href="tabel.php" class="nav-link">
+                      <i class="nav-icon fas fa-columns"></i>
+                      <p>
+                        Tabel
+                      </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="grafik.php" class="nav-link m-0">
+                      <i class="nav-icon fas fa-chart-bar"></i>
+                      <p>
+                        Grafik
+                      </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="sqldata.php" class="nav-link m-0">
+                      <i class="nav-icon fas fa-database"></i>
+                      <p>
+                        SQL Data
+                      </p>
+                    </a>
+                  </li>
             </ul>
           </nav>
           <!-- /.sidebar-menu -->
@@ -93,7 +105,7 @@
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="tabel.php">Home</a></li>
                 <li class="breadcrumb-item active">SQL Data</li>
               </ol>
             </div>
@@ -125,12 +137,6 @@
                       </thead>
                       <tbody>
                       <?php
-                          $conn = mysqli_connect("localhost", "root", "", "datadummy");
-
-                          if ($conn->connect_error) {
-                            die("Connection failed: " . $conn->connect_error);
-                          }
-                          
                           $sql = "SELECT E_ID, Nama, Umur FROM employee";
                           $result = $conn->query($sql);
 
@@ -167,3 +173,11 @@
 </div>
 </body>
 </html>
+
+<script>
+  n =  new Date();
+  y = n.getFullYear();
+  m = n.getMonth() + 1;
+  d = n.getDate();
+  document.getElementById("date").innerHTML = d + "/" + m + "/" + y;
+</script>

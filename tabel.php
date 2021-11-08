@@ -1,3 +1,11 @@
+<?php
+  session_start();
+  if(!isset($_SESSION["login"])){
+    header("location: login.php");
+    exit;
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,10 +31,10 @@
         <a href="#" class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="../../index3.html" class="nav-link">Home</a>
+        <a href="tabel.php" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
+        <!-- <a href="#" class="nav-link">Contact</a> -->
       </li>
     </ul>
   </nav>
@@ -39,6 +47,9 @@
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image mt-1">
+          <img src="assets/eagle.jpg" class="img-circle elevation-2" alt="Image">
+        </div>
         <div class="info">
           <!-- <i class="fas fa-tachometer-alt"></i> -->
           <a href="#" class="d-block">Welcome to Dashboard!</a>
@@ -51,7 +62,7 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="../Dashboard/tabel.html" class="nav-link">
+            <a href="tabel.php" class="nav-link">
               <i class="nav-icon fas fa-columns"></i>
               <p>
                 Tabel
@@ -59,7 +70,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="../Dashboard/grafik.html" class="nav-link m-0">
+            <a href="grafik.php" class="nav-link m-0">
               <i class="nav-icon fas fa-chart-bar"></i>
               <p>
                 Grafik
@@ -67,7 +78,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="../Dashboard/sqldata.php" class="nav-link m-0">
+            <a href="sqldata.php" class="nav-link m-0">
               <i class="nav-icon fas fa-database"></i>
               <p>
                 SQL Data
@@ -126,112 +137,39 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Kamis, 25/02/2021,
-                        19:41:50
-                    </td>
-                    <td>Kamis, 25/02/2021,
-                      21:00:50
-                    </td>
-                    <td>Act : Audiyatra
-                        Dis : Rizaldy, Gathot
-                    </td>
-                    <td> 1. Interlock Hose Reel Front</td>
-                  </tr>
-                  
-                  <tr>
-                    <td>2</td>
-                    <td>Minggu, 01/03/2021,
-                        19:41:50
-                    </td>
-                    <td>Minggu, 01/03/2021,
-                        22:41:50
-                    </td>
-                    <td> </td>
-                    <td> 2. Interlock Hose Reel Rear</td>
-                  </tr>
 
-                  <tr>
-                    <td>3</td>
-                    <td>Minggu, 01/03/2021,
-                        23:30:00
-                    </td>
-                    <td>Minggu, 01/03/2021,
-                        00:30:00
-                    </td>
-                    <td> </td>
-                    <td> 3. Interlock Input Coupler Stow</td>
-                  </tr>
+                  <?php
+                    $conn = mysqli_connect("localhost", "root", "", "datadummy");
 
-                  <tr>
-                    <td>4</td>
-                    <td>Selasa, 03/03/2021,
-                        08:30:30
-                    </td>
-                    <td>Selasa, 03/03/2021,
-                        09:30:30
-                    </td>
-                    <td> </td>
-                    <td> 4. Interlock Input Hose Boom Stow </td>
-                  </tr>
+                    if ($conn->connect_error) {
+                      die("Connection failed: " . $conn->connect_error);
+                    }
+                          
+                    $sql = "SELECT no, t_on, t_off, ack_by, reason FROM tables";
+                    $result = $conn->query($sql);
 
-                  <tr>
-                    <td>5</td>
-                    <td>Kamis, 05/03/2021,
-                        08:30:30
-                    </td>
-                    <td>Kamis, 05/03/2021,
-                        10:30:30
-                    </td>
-                    <td> </td>
-                    <td> 9. Interlock Bonding Static Reel Front </td>
-                  </tr>
-
-                  <tr>
-                    <td>6</td>
-                    <td>Jumat, 06/03/2021,
-                        08:30:30
-                    </td>
-                    <td>Jumat, 06/03/2021,
-                        08:45:30
-                    </td>
-                    <td> </td>
-                    <td> 10. Interlock Bonding Static Reel Rear </td>
-                  </tr>
-
-                  <tr>
-                    <td>7</td>
-                    <td>Senin, 08/03/2021,
-                        08:30:30
-                    </td>
-                    <td>Senin, 08/03/2021,
-                        08:30:30
-                    </td>
-                    <td> </td>
-                    <td> 15. Interlock System Fault </td>
-                  </tr>
-
-                  <tr>
-                    <td>8</td>
-                    <td>Selasa, 16/03/2021,
-                        08:30:30
-                    </td>
-                    <td>Selasa, 16/03/2021,
-                        08:30:30
-                    </td>
-                    <td> </td>
-                    <td> 16. Breakdown </td>
-                  </tr>
-
-                  </tbody>
-                </table>
+                    if($result -> num_rows > 0){
+                      while($row = $result -> fetch_assoc()){
+                        echo "<tr><td>".$row["no"]."</td><td>".
+                                        $row["t_on"]."</td><td>".
+                                        $row["t_off"]."</td><td>".
+                                        $row["ack_by"]."</td><td>".
+                                        $row["reason"]."</td></tr>";
+                      }
+                      echo "</tbody></table>";
+                    }
+                    else{
+                      echo "0 result";
+                    }
+                    $conn -> close();
+                  ?>
               </div>
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
           </div>
           <!-- /.col -->
+         
           <div class="col-md-2">
             <button type="button" class="btn btn-block btn-primary" 
                 onclick="exportTableToExcel('datatable', 'download')">
@@ -239,7 +177,7 @@
             </button>
           </div>
           <div class="col-md-2"> 
-            <form action="../Login/login.html" method="get">
+            <form action="logout.php" method="get">
               <button type="submit" class="btn btn-block btn-warning">Logout</button>
             </form>
           </div>
@@ -249,9 +187,16 @@
 
         <!-- /.content -->
       </div>
+      <br>
       </div>
       <!-- /.container-fluid -->
     </section>
+    <footer class="main-footer">
+      <div class="float-right d-none d-sm-block">
+        <b>Version</b> 1.0
+      </div>
+      <strong>Copyright &copy; 2021 Hanifa Fauziah.</strong> All rights reserved.
+    </footer>
 
 
   <!-- /.content-wrapper -->
@@ -286,7 +231,7 @@
   y = n.getFullYear();
   m = n.getMonth() + 1;
   d = n.getDate();
-  document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
+  document.getElementById("date").innerHTML = d + "/" + m + "/" + y;
 
   function exportTableToExcel(tableID, filename = ''){
     var downloadLink;
@@ -320,21 +265,6 @@
     }
   }
   
-  // $(function () {
-  //   $("#example1").DataTable({
-  //     "responsive": true, "lengthChange": false, "autoWidth": false,
-  //     "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-  //   }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-  //   $('#example2').DataTable({
-  //     "paging": true,
-  //     "lengthChange": false,
-  //     "searching": false,
-  //     "ordering": true,
-  //     "info": true,
-  //     "autoWidth": false,
-  //     "responsive": true,
-  //   });
-  // });
 
 </script>
 </body>

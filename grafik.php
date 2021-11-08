@@ -1,3 +1,14 @@
+<?php
+  session_start();
+  require 'db_connect.php';
+  if(!isset($_SESSION["login"])){
+    header("location: login.php");
+    exit;
+  }
+  $no = mysqli_query($conn,"SELECT id FROM trend");
+  $value = mysqli_query($conn,"SELECT value FROM trend");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +23,7 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="../assets/css/adminlte.min.css">
   <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+  <script src="assets/js/Chart.js" type="text/javascript"></script>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -23,10 +35,10 @@
         <a href="#" class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="../../index3.html" class="nav-link">Home</a>
+        <a href="tabel.php" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
+        <a href="logout.php" class="nav-link">Logout</a>
       </li>
     </ul>
   </nav>
@@ -39,6 +51,9 @@
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image mt-1">
+          <img src="assets/eagle.jpg" class="img-circle elevation-2" alt="Image">
+        </div>
         <div class="info">
           <!-- <i class="fas fa-tachometer-alt"></i> -->
           <a href="#" class="d-block">Welcome to Dashboard!</a>
@@ -51,7 +66,7 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="../Dashboard/tabel.html" class="nav-link">
+            <a href="tabel.php" class="nav-link">
               <i class="nav-icon fas fa-columns"></i>
               <p>
                 Tabel
@@ -59,7 +74,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="../Dashboard/grafik.html" class="nav-link m-0">
+            <a href="grafik.php" class="nav-link m-0">
               <i class="nav-icon fas fa-chart-bar"></i>
               <p>
                 Grafik
@@ -67,7 +82,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="../Dashboard/sqldata.php" class="nav-link m-0">
+            <a href="sqldata.php" class="nav-link m-0">
               <i class="nav-icon fas fa-database"></i>
               <p>
                 SQL Data
@@ -95,7 +110,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item"><a href="tabel.php">Home</a></li>
               <li class="breadcrumb-item active">Grafik</li>
             </ol>
           </div>
@@ -113,7 +128,41 @@
         </div>
         <div class="card-body">
           <h3 class="text-center">Trend of Reason</h3>
-          <div id="bar-chart" style="height: 300px;"></div>
+          <!-- <div id="bar-chart" style="height: 300px;"></div> -->
+          <center>
+            <canvas id="trend"></canvas>
+          </center>
+
+          <script>
+            var ctx = document.getElementById("trend").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [<?php while($row = mysqli_fetch_array($no)) {echo '"'.$row['id']. '",';}?>],
+                    datasets: 
+                    [
+                        {
+                            label: 'Trend of reason',
+                            data: [<?php while($row = mysqli_fetch_array($value)) {echo '"'.$row['value']. '",';}?>, 10],
+                            backgroundColor: ['#17BEBB', '#17BEBB', '#17BEBB', '#17BEBB' ,'#17BEBB',
+                                              '#17BEBB', '#17BEBB', '#17BEBB', '#17BEBB' ,'#17BEBB',
+                                              '#17BEBB', '#17BEBB', '#17BEBB', '#17BEBB' ,'#17BEBB', '#17BEBB'],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                    }
+                }
+            });
+          </script>
+
         </div>
         <!-- /.card-body-->
       </div>
@@ -154,44 +203,7 @@
   y = n.getFullYear();
   m = n.getMonth() + 1;
   d = n.getDate();
-  document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
-
-  $(function () {
-    
-
-    /*
-     * BAR CHART
-     * ---------
-     */
-
-    var bar_data = {
-      data : [[1,2], [2,3], [3,4], [4,1], [5,12], 
-              [6,5], [7,6], [8,7], [9,1], [10,1],
-                [11,1], [12,2], [13,3], [14,2], [15,1], [16,9]],
-      bars: { show: true }
-    }
-    $.plot('#bar-chart', [bar_data], {
-      grid  : {
-        borderWidth: 1,
-        borderColor: '#f3f3f3',
-        tickColor  : '#f3f3f3'
-      },
-      series: {
-         bars: {
-          show: true, barWidth: 0.5, align: 'center',
-        },
-      },
-      colors: ['#3c8dbc'],
-      xaxis : {
-        ticks: [[1,'1'], [2,'2'], [3,'3'], [4,'4'], [5,'5'], 
-                [6,'6'], [7,'7'], [8,'8'], [9,'9'], [10,'10'],
-                [11,'11'], [12,'12'], [13,'13'], [14,'14'], [15,'15'], [16,'16']]
-      }
-    })
-    /* END BAR CHART */
-
-  })
-
+  document.getElementById("date").innerHTML = d + "/" + m + "/" + y;
 
 </script>
 </body>
