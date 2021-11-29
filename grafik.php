@@ -5,8 +5,26 @@
     header("location: login.php");
     exit;
   }
-  $no = mysqli_query($conn,"SELECT id FROM trend");
-  $value = mysqli_query($conn,"SELECT value FROM trend");
+  $stmt = $conn->prepare("SELECT id FROM trend");
+
+  if (!$stmt) {
+    die('Query Error : '.$mysqli->errno.
+    ' - '.$mysqli->error);
+  }
+
+  $stmt->execute();
+  $no = $stmt->get_result();
+
+  $stmt = $conn->prepare("SELECT value FROM trend");
+
+  if (!$stmt) {
+    die('Query Error : '.$mysqli->errno.
+    ' - '.$mysqli->error);
+  }
+
+  $stmt->execute();
+  $value = $stmt->get_result();
+
 ?>
 
 <!DOCTYPE html>
@@ -161,6 +179,7 @@
                     }
                 }
             });
+            
           </script>
 
         </div>

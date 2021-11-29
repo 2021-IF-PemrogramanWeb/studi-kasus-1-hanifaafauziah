@@ -40,6 +40,7 @@
 		$email = $_POST["email"];
     $email=(filter_var($email,  FILTER_SANITIZE_EMAIL));
     $password = $_POST["password"];
+    $password=(filter_var($password,  FILTER_SANITIZE_STRING));
 
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
 
