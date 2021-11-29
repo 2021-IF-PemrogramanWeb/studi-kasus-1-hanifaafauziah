@@ -4,7 +4,7 @@
     if(isset($_POST['register'])){
         if(registrasi($_POST) > 0){
                 error('User berhasil ditambahkan');
-                header("location: login.php");
+                header("Location: login.php");
         }
     }
   

@@ -137,8 +137,16 @@
                       </thead>
                       <tbody>
                       <?php
-                          $sql = "SELECT E_ID, Nama, Umur FROM employee";
-                          $result = $conn->query($sql);
+
+                          $stmt = $conn->prepare("SELECT E_ID, Nama, Umur FROM employee");
+
+                          if (!$stmt) {
+                            die('Query Error : '.$mysqli->errno.
+                            ' - '.$mysqli->error);
+                          }
+
+                          $stmt->execute();
+                          $result = $stmt->get_result();
 
                           if($result -> num_rows > 0){
                             while($row = $result -> fetch_assoc()){
@@ -151,7 +159,7 @@
                           else{
                             echo "0 result";
                           }
-
+                          $stmt -> close();
                           $conn -> close();
                       ?>
                 </div>

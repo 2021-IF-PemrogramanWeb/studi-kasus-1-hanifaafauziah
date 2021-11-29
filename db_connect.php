@@ -17,11 +17,24 @@
 		global $conn;
 
 		$nama = $data["nama"];
+		$nama=(filter_var($nama,  FILTER_SANITIZE_STRING));
 		$email = $data["email"];
+		$email=(filter_var($email,  FILTER_SANITIZE_EMAIL));
 		$password = mysqli_real_escape_string($conn, $data["password"]);
 		$password2 = mysqli_real_escape_string($conn, $data["password2"]);
 
-		$result = mysqli_query($conn, "SELECT email FROM users WHERE email = '$email' ");
+		$stmt = $conn->prepare("SELECT email FROM users WHERE email = ?");
+
+		if (!$stmt) {
+			die('Query Error : '.$mysqli->errno.
+			' - '.$mysqli->error);
+		}
+
+		$stmt->bind_param("s", $email);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+		// $result = mysqli_query($conn, "SELECT email FROM users WHERE email = '$email' ");
 		if(mysqli_fetch_assoc($result)){
 			error("Email telah terdaftar!");
 			return false;
@@ -34,10 +47,13 @@
 
 		$password = password_hash($password, PASSWORD_DEFAULT);
 
-		mysqli_query($conn, "INSERT INTO users VALUES('', '$nama', '$email', '$password')");
-
+		$stmt = $conn->prepare("INSERT INTO users (nama, email, password) VALUES (?, ?, ?)");
+		$stmt->bind_param("sss", $nama, $email, $password);
+		$stmt->execute();
+		
 		return mysqli_affected_rows($conn);
-
+		$stmt->close();
+		$conn->close();
 	}
 
 

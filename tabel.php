@@ -1,5 +1,7 @@
 <?php
   session_start();
+  require 'db_connect.php';
+
   if(!isset($_SESSION["login"])){
     header("location: login.php");
     exit;
@@ -139,14 +141,16 @@
                   <tbody>
 
                   <?php
-                    $conn = mysqli_connect("localhost", "root", "", "datadummy");
 
-                    if ($conn->connect_error) {
-                      die("Connection failed: " . $conn->connect_error);
+                    $stmt = $conn->prepare("SELECT no, t_on, t_off, ack_by, reason FROM tables");
+
+                    if (!$stmt) {
+                      die('Query Error : '.$mysqli->errno.
+                      ' - '.$mysqli->error);
                     }
-                          
-                    $sql = "SELECT no, t_on, t_off, ack_by, reason FROM tables";
-                    $result = $conn->query($sql);
+
+                    $stmt->execute();
+                    $result = $stmt->get_result();
 
                     if($result -> num_rows > 0){
                       while($row = $result -> fetch_assoc()){
@@ -161,6 +165,7 @@
                     else{
                       echo "0 result";
                     }
+                    $stmt -> close();
                     $conn -> close();
                   ?>
               </div>

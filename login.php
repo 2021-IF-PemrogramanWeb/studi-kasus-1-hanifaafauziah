@@ -7,7 +7,18 @@
     $num = $_COOKIE['num'];
     $key = $_COOKIE['key'];
 
-    $result = mysqli_query($conn, "SELECT email FROM users WHERE id = '$num' ");
+    $stmt = $conn->prepare("SELECT email FROM users WHERE id = ?");
+
+		if (!$stmt) {
+			die('Query Error : '.$mysqli->errno.
+			' - '.$mysqli->error);
+		}
+
+		$stmt->bind_param("s", $num);
+		$stmt->execute();
+		$result = $stmt->get_result();
+
+    // $result = mysqli_query($conn, "SELECT email FROM users WHERE id = '$num' ");
     $row = mysqli_fetch_assoc($result);
 
     if($key === hash('sha256', $row['email'])){
@@ -25,12 +36,26 @@
   
   if(isset($_POST["login"])){
 
+
 		$email = $_POST["email"];
+    $email=(filter_var($email,  FILTER_SANITIZE_EMAIL));
     $password = $_POST["password"];
 
-    $result = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email' ");
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
 
-    if(mysqli_num_rows($result)===1){
+		if (!$stmt) {
+			die('Query Error : '.$mysqli->errno.
+			' - '.$mysqli->error);
+		}
+
+		$stmt->bind_param("s", $email);
+		$stmt->execute();
+		$result = $stmt->get_result();
+    if(empty($email) && empty($password)){
+      error("Silahkan masukkan email dan password anda.");
+      $error=1;
+    }
+    else if(mysqli_num_rows($result)===1 && $password != null){
 
       $row = mysqli_fetch_assoc($result);
       if(password_verify($password, $row["password"])){
@@ -45,27 +70,16 @@
         header("location: tabel.php");
         exit;
       }
+      else if(password_verify($password, $row["password"])==0){
+        error("Email/Password yang anda masukkan tidak valid.");
+      }
 
     }
-
-    if(empty($email) && empty($password)){
-      error("Silahkan masukkan email dan password anda.");
-      $error=1;
-    }
-
-    else if(empty($email)){
-      error("Silahkan masukkan email anda.");
-      $error=1;
-    }
-
-    else if(empty($password)){
-      error("Silahkan masukkan password anda.");
-      $error=1;
-    }
-
     else{
-      error("Email / Password tidak sesuai");
+      error("Email/Password yang anda masukkan tidak valid.");
     }
+
+
 
   }
   
